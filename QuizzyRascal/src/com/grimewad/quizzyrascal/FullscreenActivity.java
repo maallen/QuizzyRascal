@@ -3,15 +3,10 @@ package com.grimewad.quizzyrascal;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.zxing.client.android.CaptureActivity;
-import com.google.zxing.qrcode.QRCodeReader;
-import com.grimewad.quizzyrascal.util.SystemUiHider;
-
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
-import android.app.Application;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -22,6 +17,8 @@ import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
+
+import com.grimewad.quizzyrascal.util.SystemUiHider;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.

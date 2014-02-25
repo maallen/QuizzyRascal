@@ -1,19 +1,11 @@
 package com.grimewad.quizzyrascal;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.ActivityManager;
-import android.app.ActivityManager.RunningAppProcessInfo;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -217,7 +209,7 @@ public class FullscreenActivity extends Activity {
 		         MONITORING_ACTIVE = true; 
 		         startBrowserMonitoringService();
 		      } else if (resultCode == RESULT_CANCELED) {
-		    	  Toast toast = Toast.makeText(this, "Failed to get QR Code", Toast.LENGTH_SHORT);
+		    	  Toast toast = Toast.makeText(this, "Failed to scan QR Code", Toast.LENGTH_SHORT);
 		    	  toast.show();
 		      }
 		   }

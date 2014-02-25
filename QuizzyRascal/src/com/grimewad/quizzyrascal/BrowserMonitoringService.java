@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.ActivityManager;
-import android.app.IntentService;
 import android.app.ActivityManager.RunningAppProcessInfo;
+import android.app.IntentService;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.support.v4.content.LocalBroadcastManager;
-import android.widget.Toast;
 
 public class BrowserMonitoringService extends IntentService{
 	

@@ -7,13 +7,17 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
@@ -56,6 +60,19 @@ public class FullscreenActivity extends Activity {
 	 * The instance of the {@link SystemUiHider} for this activity.
 	 */
 	private SystemUiHider mSystemUiHider;
+	
+	private BroadcastReceiver receiver = new BroadcastReceiver() {
+
+	    @Override
+	    public void onReceive(Context context, Intent intent) {
+	      Bundle bundle = intent.getExtras();
+	      if (bundle != null) {
+	        String runningBrowser = bundle.getString(BrowserMonitoringService.BROWSER_RUNNING);
+	        Toast.makeText(FullscreenActivity.this, "Browser " + runningBrowser + 
+	        		" is running!!!!", Toast.LENGTH_SHORT).show();	        
+	      }
+	    }
+	  };
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -129,9 +146,9 @@ public class FullscreenActivity extends Activity {
 		findViewById(R.id.scan_qr_code_button).setOnTouchListener(
 				mDelayHideTouchListener);
 		
-		// Start BrowserMonitoringService background service
-		Intent browserMonitoringServiceIntent = new Intent (this, BrowserMonitoringService.class);
-		this.startService(browserMonitoringServiceIntent);
+  	  LocalBroadcastManager.getInstance(this).registerReceiver(receiver, 
+			  new IntentFilter("com.grimewad.quizzyrascal.ALERT"));
+		
 	}
 
 	@Override
@@ -190,49 +207,27 @@ public class FullscreenActivity extends Activity {
 	    
 	}
 	
-	public void checkIfBrowserIsInUse(){
-	    ActivityManager activityManager = (ActivityManager) this.getSystemService( ACTIVITY_SERVICE );
-	    List<RunningAppProcessInfo> procInfos = activityManager.getRunningAppProcesses();
-	    List<String> installedBrowserPackages = getInstalledBrowserPackageNames();
-	    for(int i = 0; i < procInfos.size(); i++){
-	    	for(String packageName: installedBrowserPackages){
-		        if(procInfos.get(i).processName.equals(packageName)) {
-		            Toast.makeText(getApplicationContext(), "Browser is running", Toast.LENGTH_LONG).show();
-		        }
-	    	}
-
-	    }
-	}
-	
-	public List<String> getInstalledBrowserPackageNames(){
-		
-	    PackageManager packageManager = getApplicationContext().getPackageManager();
-	    Intent intent = new Intent(Intent.ACTION_VIEW);
-	    intent.setData(Uri.parse("http://www.google.com"));
-	    List<String> installedBrowserPackageNames = new ArrayList<String>();
-	    List<ResolveInfo> list = packageManager.queryIntentActivities(intent,
-	            PackageManager.MATCH_DEFAULT_ONLY);
-        for (ResolveInfo info : list) {
-        	installedBrowserPackageNames.add(info.activityInfo.packageName);
-        }
-        
-        return installedBrowserPackageNames;
-	         
-	}
-	
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		   if (requestCode == 0) {
 		      if (resultCode == RESULT_OK) {
 		         String contents = intent.getStringExtra("SCAN_RESULT");
-		         String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
 		         Toast toast = Toast.makeText(this, "Successfully scanned QR Code", Toast.LENGTH_SHORT);
 		         toast.show();
-		         MONITORING_ACTIVE = true;
+		         MONITORING_ACTIVE = true; 
+		         startBrowserMonitoringService();
 		      } else if (resultCode == RESULT_CANCELED) {
 		    	  Toast toast = Toast.makeText(this, "Failed to get QR Code", Toast.LENGTH_SHORT);
 		    	  toast.show();
 		      }
 		   }
-		}
+	}
+	
+	/**
+	 * Starts an IntentService that monitors if a browser is running
+	 */
+	private void startBrowserMonitoringService(){
+		Intent browserMonitoringServiceIntent = new Intent (this, BrowserMonitoringService.class);
+ 		startService(browserMonitoringServiceIntent);
+	}
 }

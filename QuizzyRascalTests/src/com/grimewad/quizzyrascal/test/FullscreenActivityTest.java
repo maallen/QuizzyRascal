@@ -1,6 +1,7 @@
 package com.grimewad.quizzyrascal.test;
 
 import android.content.Intent;
+import android.hardware.Camera;
 import android.test.ActivityUnitTestCase;
 import android.test.suitebuilder.annotation.SmallTest;
 import android.widget.Button;

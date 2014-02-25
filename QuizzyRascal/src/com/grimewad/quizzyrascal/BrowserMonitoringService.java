@@ -10,9 +10,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
 public class BrowserMonitoringService extends IntentService{
+	
+	public static final String BROWSER_RUNNING = "Browser Running";
+	
+	private static final String NOTIFICATION = "com.grimewad.quizzyrascal.ALERT";
 
 	public BrowserMonitoringService() {
 		super("BrowserMoitoringService");
@@ -24,10 +29,12 @@ public class BrowserMonitoringService extends IntentService{
 			List<String> installedBrowsers = getInstalledBrowserPackageNames();
 		    ActivityManager activityManager = (ActivityManager) this.getSystemService( ACTIVITY_SERVICE );
 		    List<RunningAppProcessInfo> procInfos = activityManager.getRunningAppProcesses();
-		    for(int i = 0; i < procInfos.size(); i++){
-		    	for(String packageName: installedBrowsers){
-			        if(procInfos.get(i).processName.equals(packageName)) {
-			            Toast.makeText(getApplicationContext(), "Browser is running", Toast.LENGTH_LONG).show();
+		    browserMonitoring:
+		    for(String packageName: installedBrowsers){
+		    	for(RunningAppProcessInfo processInfo: procInfos){
+		    		if(processInfo.processName.equals(packageName)) {
+			            sendAlert(packageName);
+			            break browserMonitoring;
 			        }
 		    	}
 		    }
@@ -50,16 +57,10 @@ public class BrowserMonitoringService extends IntentService{
 	         
 	}
 	
-	public final class Constants{
-		
-		// Defines a custom Intent action
-	    public static final String BROADCAST_ACTION =
-	        "com.example.android.threadsample.BROADCAST";
-	    
-	    // Defines the key for the status "extra" in an Intent
-	    public static final String EXTENDED_DATA_STATUS =
-	        "com.example.android.threadsample.STATUS";
-	    
+	private void sendAlert(String browserName){
+		Intent intent = new Intent(NOTIFICATION);
+		intent.putExtra(BROWSER_RUNNING, browserName);
+		LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 	}
 
 }

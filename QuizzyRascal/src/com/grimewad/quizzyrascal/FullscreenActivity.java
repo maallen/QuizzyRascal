@@ -2,6 +2,7 @@ package com.grimewad.quizzyrascal;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -60,8 +61,8 @@ public class FullscreenActivity extends Activity {
 	      Bundle bundle = intent.getExtras();
 	      if (bundle != null) {
 	        String runningBrowser = bundle.getString(BrowserMonitoringService.BROWSER_RUNNING);
-	        Toast.makeText(FullscreenActivity.this, "Browser " + runningBrowser + 
-	        		" is running!!!!", Toast.LENGTH_SHORT).show();	        
+	        Toast.makeText(FullscreenActivity.this, "Quizzy Rascal has identified an internet browser (" + runningBrowser +
+	        		") is open on your screen! Please close this immediately. The Quiz master has been notified!", Toast.LENGTH_LONG).show();	        
 	      }
 	    }
 	  };
@@ -139,7 +140,7 @@ public class FullscreenActivity extends Activity {
 				mDelayHideTouchListener);
 		
   	  LocalBroadcastManager.getInstance(this).registerReceiver(receiver, 
-			  new IntentFilter("com.grimewad.quizzyrascal.ALERT"));
+			  new IntentFilter(BrowserMonitoringService.NOTIFICATION));
 		
 	}
 
@@ -203,18 +204,26 @@ public class FullscreenActivity extends Activity {
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		   if (requestCode == 0) {
 		      if (resultCode == RESULT_OK) {
-		         String contents = intent.getStringExtra("SCAN_RESULT");
+		         String qrCodeContents = intent.getStringExtra("SCAN_RESULT");
+		         associateWithQuizAccount(qrCodeContents);
 		         Toast toast = Toast.makeText(this, "Successfully scanned QR Code", Toast.LENGTH_SHORT);
 		         toast.show();
 		         MONITORING_ACTIVE = true; 
 		         startBrowserMonitoringService();
 		      } else if (resultCode == RESULT_CANCELED) {
-		    	  Toast toast = Toast.makeText(this, "Failed to scan QR Code", Toast.LENGTH_SHORT);
+		    	  Toast toast = Toast.makeText(this, "Failed to scan QR Code. Please try again.", Toast.LENGTH_SHORT);
 		    	  toast.show();
 		      }
 		   }
 	}
 	
+	private void associateWithQuizAccount(String qrCodeContents) {
+		/*
+		 *  TODO implement logic to connect to server and associate 
+		 *  device with Quizmaster account
+		 */		
+	}
+
 	/**
 	 * Starts an IntentService that monitors if a browser is running
 	 */

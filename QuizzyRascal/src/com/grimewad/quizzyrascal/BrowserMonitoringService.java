@@ -5,18 +5,22 @@ import java.util.List;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
+import android.app.ActivityManager.RunningTaskInfo;
 import android.app.IntentService;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 
 public class BrowserMonitoringService extends IntentService{
 	
 	public static final String BROWSER_RUNNING = "Browser Running";
 	
-	private static final String NOTIFICATION = "com.grimewad.quizzyrascal.ALERT";
+	public static final String NOTIFICATION = "com.grimewad.quizzyrascal.ALERT";
 
 	public BrowserMonitoringService() {
 		super("BrowserMoitoringService");
@@ -24,20 +28,37 @@ public class BrowserMonitoringService extends IntentService{
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
+		createForegroundNotification();
 		while(FullscreenActivity.MONITORING_ACTIVE){
 			List<String> installedBrowsers = getInstalledBrowserPackageNames();
-		    ActivityManager activityManager = (ActivityManager) this.getSystemService( ACTIVITY_SERVICE );
-		    List<RunningAppProcessInfo> procInfos = activityManager.getRunningAppProcesses();
+		    ActivityManager activityManager = (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
+		    List<RunningTaskInfo> tasks = activityManager.getRunningTasks(1);
 		    browserMonitoring:
 		    for(String packageName: installedBrowsers){
-		    	for(RunningAppProcessInfo processInfo: procInfos){
-		    		if(processInfo.processName.equals(packageName)) {
+		    	for(RunningTaskInfo task: tasks){
+		    		if(task.topActivity.getPackageName().equals(packageName)) {
+		    			activityManager.killBackgroundProcesses(packageName);
 			            sendAlert(packageName);
 			            break browserMonitoring;
 			        }
 		    	}
 		    }
+		    try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {}
 		}	
+	}
+	
+	private void createForegroundNotification(){
+		NotificationCompat.Builder notificationBuilder =
+			    new NotificationCompat.Builder(this)
+			    .setSmallIcon(R.drawable.ic_launcher)
+			    .setContentTitle("Quizzy Rascal")
+			    .setContentText("Monitoring in progress.")
+			    .setTicker("Quizzy Rascal browser monitoring started.")
+			    .setOngoing(true);
+		Notification notification = notificationBuilder.build();
+		startForeground(1, notification);
 	}
 	
 	private List<String> getInstalledBrowserPackageNames(){

@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.ActivityManager;
-import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.app.IntentService;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -23,7 +21,7 @@ public class BrowserMonitoringService extends IntentService{
 	public static final String NOTIFICATION = "com.grimewad.quizzyrascal.ALERT";
 
 	public BrowserMonitoringService() {
-		super("BrowserMoitoringService");
+		super("BrowserMonitoringService");
 	}
 
 	@Override

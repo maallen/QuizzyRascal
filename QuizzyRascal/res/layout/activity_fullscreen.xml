@@ -46,13 +46,26 @@
 
         <Button
             android:id="@+id/scan_qr_code_button"
+            style="@style/ButtonText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:background="@color/black_overlay"
-            android:text="@string/scan_button"
-            android:onClick="scanQrCode" />
+            android:background="@drawable/greenbutton"
+            android:onClick="scanQrCode"
+            android:text="@string/scan_button" />
+
+        <Button
+            android:id="@+id/stop_monitoring_button"
+            style="@style/ButtonText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/scan_qr_code_button"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="69dp"
+            android:background="@drawable/redbutton"
+            android:onClick="stopMonitoring"
+            android:text="@string/stop_monitoring" />
 
     </RelativeLayout>
 

@@ -2,6 +2,8 @@ package com.grimewad.quizzyrascal;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +11,7 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.MotionEvent;
 import android.view.View;
@@ -229,5 +232,23 @@ public class FullscreenActivity extends Activity {
 	private void startBrowserMonitoringService(){
 		Intent browserMonitoringServiceIntent = new Intent (this, BrowserMonitoringService.class);
  		startService(browserMonitoringServiceIntent);
+	}
+	
+	/**
+	 * Stops the application monitoring of browser activity
+	 */
+	public void stopMonitoring(View view){
+		MONITORING_ACTIVE = false;
+		stopService(new Intent (this, BrowserMonitoringService.class));
+		removeNotification();
+		/* TODO send signal to quizmaster that 
+		 * monitoring has been stopped on this device
+		 */
+	}
+
+	private void removeNotification() {
+		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		notificationManager.cancelAll();
+		
 	}
 }

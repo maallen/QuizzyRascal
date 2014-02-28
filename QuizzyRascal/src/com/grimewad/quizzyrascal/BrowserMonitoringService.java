@@ -19,9 +19,11 @@ public class BrowserMonitoringService extends IntentService{
 	public static final String BROWSER_RUNNING = "Browser Running";
 	
 	public static final String NOTIFICATION = "com.grimewad.quizzyrascal.ALERT";
+	
+	public static final String BROWSER_MONITORING_SERVICE = "BrowserMonitoringService";
 
 	public BrowserMonitoringService() {
-		super("BrowserMonitoringService");
+		super(BROWSER_MONITORING_SERVICE);
 	}
 
 	@Override

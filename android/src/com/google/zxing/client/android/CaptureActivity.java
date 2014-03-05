@@ -403,7 +403,7 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback 
       // historyManager.addHistoryItem(rawResult, resultHandler);
       // Then not from history, so beep/vibrate and we have an image to draw on
       beepManager.playBeepSoundAndVibrate();
-      drawResultPoints(barcode, scaleFactor, rawResult);
+    //  drawResultPoints(barcode, scaleFactor, rawResult);
     }
     
     handleDecodeExternally(rawResult, resultHandler, barcode);

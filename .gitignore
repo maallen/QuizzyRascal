@@ -27,3 +27,18 @@ proguard/
 *.ipr
 *.iws
 .idea/
+
+# ignore build output
+target
+/bin
+# ignore eclipse files
+.project
+.classpath
+.settings
+.metadata
+# ignore IDEA files
+*.iml
+*.ipr
+*.iws
+.idea
+.gitignore~

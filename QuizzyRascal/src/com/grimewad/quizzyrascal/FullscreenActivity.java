@@ -32,6 +32,8 @@ public class FullscreenActivity extends Activity {
 	 */
 	private static final boolean AUTO_HIDE = true;
 	
+	protected static int DEVICE_ID;
+	
 	public static boolean MONITORING_ACTIVE = false;
 
 	/**
@@ -63,8 +65,9 @@ public class FullscreenActivity extends Activity {
 	      Bundle bundle = intent.getExtras();
 	      if (bundle != null) {
 	        String runningBrowser = bundle.getString(BrowserMonitoringService.BROWSER_RUNNING);
+	        notifyServer(runningBrowser);
 	        Toast.makeText(FullscreenActivity.this, "Quizzy Rascal has identified an internet browser (" + runningBrowser +
-	        		") is open on your screen! Please close this immediately. The Quiz master has been notified!", Toast.LENGTH_LONG).show();	        
+	        		") is open on your screen! Please close this immediately. The Quiz master has been notified!", Toast.LENGTH_LONG).show();      
 	      }
 	    }
 	  };
@@ -223,7 +226,8 @@ public class FullscreenActivity extends Activity {
 		/*
 		 *  TODO implement logic to connect to server and associate 
 		 *  device with Quizmaster account
-		 */		
+		 */	
+		DEVICE_ID = 1;
 	}
 
 	/**
@@ -250,5 +254,13 @@ public class FullscreenActivity extends Activity {
 		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		notificationManager.cancelAll();
 		
+	}
+	
+	
+	private void notifyServer(String browserName){
+		Intent notifyServerServiceIntent = new Intent(this, NotifyServerService.class);
+		notifyServerServiceIntent.putExtra("deviceId", DEVICE_ID);
+		notifyServerServiceIntent.putExtra("openBrowser", browserName);
+		startService(notifyServerServiceIntent);
 	}
 }

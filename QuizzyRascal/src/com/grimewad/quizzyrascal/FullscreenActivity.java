@@ -1,5 +1,14 @@
 package com.grimewad.quizzyrascal;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONObject;
+
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Notification;
@@ -227,7 +236,26 @@ public class FullscreenActivity extends Activity {
 		 *  TODO implement logic to connect to server and associate 
 		 *  device with Quizmaster account
 		 */	
-		DEVICE_ID = 1;
+		try {
+		    HttpClient httpClient = new DefaultHttpClient();
+		    HttpGet get = new HttpGet(
+		            "http://192.168.0.22:8080/QuizzyRascalServer/rest/getId");
+
+		    HttpResponse response = httpClient.execute(get);
+		    HttpEntity entity = response.getEntity();
+		    if(entity != null){
+		    	String jsonString = entity.toString();
+		    	JSONObject json = new JSONObject(jsonString);
+		    	String deviceIdString = (String) json.get("deviceId");
+		    	DEVICE_ID = Integer.parseInt(deviceIdString);
+		    	Toast.makeText(this, "Device Id set as " + DEVICE_ID, Toast.LENGTH_SHORT).show();
+		    }
+		    
+		} catch (Exception E) {
+		    E.printStackTrace();
+		}
+		
+		
 	}
 
 	/**

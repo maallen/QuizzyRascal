@@ -7,6 +7,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.ResponseConnControl;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.annotation.TargetApi;
@@ -26,6 +28,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.grimewad.quizzyrascal.util.SystemUiHider;
 
 /**
@@ -42,6 +50,8 @@ public class FullscreenActivity extends Activity {
 	private static final boolean AUTO_HIDE = true;
 	
 	protected static int DEVICE_ID;
+	
+	private RequestQueue requestQueue;
 	
 	public static boolean MONITORING_ACTIVE = false;
 
@@ -155,6 +165,8 @@ public class FullscreenActivity extends Activity {
 		
   	  LocalBroadcastManager.getInstance(this).registerReceiver(receiver, 
 			  new IntentFilter(BrowserMonitoringService.NOTIFICATION));
+  	  
+  	  requestQueue = Volley.newRequestQueue(this);
 		
 	}
 
@@ -236,24 +248,33 @@ public class FullscreenActivity extends Activity {
 		 *  TODO implement logic to connect to server and associate 
 		 *  device with Quizmaster account
 		 */	
-		try {
-		    HttpClient httpClient = new DefaultHttpClient();
-		    HttpGet get = new HttpGet(
-		            "http://192.168.0.22:8080/QuizzyRascalServer/rest/getId");
+		String url = "http://192.168.0.22:8080/QuizzyRascalServer/rest/getId";
+		JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>(){
 
-		    HttpResponse response = httpClient.execute(get);
-		    HttpEntity entity = response.getEntity();
-		    if(entity != null){
-		    	String jsonString = entity.toString();
-		    	JSONObject json = new JSONObject(jsonString);
-		    	String deviceIdString = (String) json.get("deviceId");
-		    	DEVICE_ID = Integer.parseInt(deviceIdString);
-		    	Toast.makeText(this, "Device Id set as " + DEVICE_ID, Toast.LENGTH_SHORT).show();
-		    }
-		    
-		} catch (Exception E) {
-		    E.printStackTrace();
-		}
+			@Override
+			public void onResponse(JSONObject response) {
+				try {
+					DEVICE_ID = response.getInt("deviceId");
+				} catch (JSONException e) {
+					Toast.makeText(FullscreenActivity.this, "Error parsing Device Id. " +
+							"Please scan Quiz Code again", Toast.LENGTH_SHORT).show();
+					e.printStackTrace();
+				}
+				
+			}
+			
+		}, 
+		new Response.ErrorListener() {
+
+			@Override
+			public void onErrorResponse(VolleyError error) {
+				Toast.makeText(FullscreenActivity.this, "Error retrieving Device Id from server. " +
+						"Please scan Quiz Code again", Toast.LENGTH_SHORT).show();
+				
+			}
+		});
+		
+		requestQueue.add(request);
 		
 		
 	}

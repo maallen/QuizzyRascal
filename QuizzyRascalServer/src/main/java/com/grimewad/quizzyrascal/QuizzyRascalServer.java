@@ -27,6 +27,7 @@ public class QuizzyRascalServer {
 	public DeviceId assignDeviceId(){
 		DeviceId deviceId = new DeviceId();
 		deviceId.setDeviceId(generateDeviceId());
+		System.out.println("About to return JSON DeviceId");
 		return deviceId;
 	}
 	

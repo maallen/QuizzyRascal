@@ -12,10 +12,9 @@ public class QuizzyRascalServer {
 	public static int DEVICE_ID = 0;
 	
 	@POST
-	@Path("/test")
+	@Path("/notifyServer")
 	@Consumes("application/json")
 	public void receiveNotificationFromClientDevice(Notification notification){
-		System.out.println("Notification");
 		System.out.println("Received notification for device "
 				+ notification.getDeviceId() + ", running browser "
 						+ notification.getOpenBrowser());
@@ -27,7 +26,6 @@ public class QuizzyRascalServer {
 	public DeviceId assignDeviceId(){
 		DeviceId deviceId = new DeviceId();
 		deviceId.setDeviceId(generateDeviceId());
-		System.out.println("About to return JSON DeviceId");
 		return deviceId;
 	}
 	
@@ -42,8 +40,7 @@ public class QuizzyRascalServer {
 	}
 	
 	private int generateDeviceId(){
-		DEVICE_ID = ++DEVICE_ID;
-		return DEVICE_ID;
+		return ++DEVICE_ID;
 	}
 
 }

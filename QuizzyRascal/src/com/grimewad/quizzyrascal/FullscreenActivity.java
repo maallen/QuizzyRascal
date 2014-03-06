@@ -1,19 +1,10 @@
 package com.grimewad.quizzyrascal;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.protocol.ResponseConnControl;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -22,7 +13,6 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.MotionEvent;
 import android.view.View;
@@ -90,6 +80,8 @@ public class FullscreenActivity extends Activity {
 	      }
 	    }
 	  };
+	  
+	 private Intent browserMonitoringServiceIntent = new Intent (this, BrowserMonitoringService.class);
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -244,10 +236,7 @@ public class FullscreenActivity extends Activity {
 	}
 	
 	private void associateWithQuizAccount(String qrCodeContents) {
-		/*
-		 *  TODO implement logic to connect to server and associate 
-		 *  device with Quizmaster account
-		 */	
+
 		String url = "http://192.168.0.22:8080/QuizzyRascalServer/rest/getId";
 		JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>(){
 
@@ -283,7 +272,6 @@ public class FullscreenActivity extends Activity {
 	 * Starts an IntentService that monitors if a browser is running
 	 */
 	private void startBrowserMonitoringService(){
-		Intent browserMonitoringServiceIntent = new Intent (this, BrowserMonitoringService.class);
  		startService(browserMonitoringServiceIntent);
 	}
 	
@@ -292,7 +280,7 @@ public class FullscreenActivity extends Activity {
 	 */
 	public void stopMonitoring(View view){
 		MONITORING_ACTIVE = false;
-		stopService(new Intent (this, BrowserMonitoringService.class));
+		stopService(browserMonitoringServiceIntent);
 		removeNotification();
 		/* TODO send signal to quizmaster that 
 		 * monitoring has been stopped on this device

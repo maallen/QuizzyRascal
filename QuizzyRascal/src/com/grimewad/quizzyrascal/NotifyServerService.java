@@ -23,7 +23,7 @@ public class NotifyServerService extends IntentService{
 		try {
 		    HttpClient httpClient = new DefaultHttpClient();
 		    HttpPost post = new HttpPost(
-		            "http://192.168.0.22:8080/QuizzyRascalServer/rest/test");
+		            "http://192.168.0.22:8080/QuizzyRascalServer/rest/notifyServer");
 		    post.setHeader("content-type", "application/json");
 
 		    JSONObject data = new JSONObject();

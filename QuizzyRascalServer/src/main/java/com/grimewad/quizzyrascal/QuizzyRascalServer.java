@@ -17,10 +17,16 @@ import com.mongodb.MongoClientURI;
 @Path("/")
 public class QuizzyRascalServer {
 	
-	public static int DEVICE_ID = 0;
+	private static int DEVICE_ID = 0;
+	
+	private static final String QUIZZY_RASCAL = "quizzyrascal";
+	
+	private static final String MONGOLAB_DB_URI = "mongodb://root:shroot@ds031349.mongolab.com:31349/quizzyrascal";
+	
+	private MongoClient mongoClient;
 	
 	@POST
-	@Path("notifyServer")
+	@Path("/notifyServer")
 	@Consumes("application/json")
 	public void receiveNotificationFromClientDevice(Notification notification){
 		System.out.println("Received notification for device "
@@ -35,40 +41,45 @@ public class QuizzyRascalServer {
 		DeviceId deviceId = new DeviceId();
 		deviceId.setDeviceId(generateDeviceId());
 		DB db = getMongoDb();
-		BasicDBObject dbObject = createDbObject(deviceId.getDeviceId());
+		BasicDBObject dbObject = createDeviceDbObject(deviceId.getDeviceId());
 		DBCollection devices = db.getCollection("Devices");
 		devices.insert(dbObject);
+		mongoClient.close();
 		return deviceId;
 	}
 	
-	private BasicDBObject createDbObject(int deviceId){
-		return new BasicDBObject().append("deviceId", deviceId)
+	@POST
+	@Path("/createTeam")
+	@Consumes("application/json")
+	public void createTeam(Team team){
+		BasicDBObject teamDbObject = new BasicDBObject().append(Team.TEAM_NAME_KEY, team.getTeamName())
+				.append(Team.NUM_OF_MEMBERS_KEY, team.getNumOfMembers());
+		DB db = getMongoDb();
+		DBCollection teams = db.getCollection("Teams");
+		teams.insert(teamDbObject);
+		mongoClient.close();
+	}
+	
+	private BasicDBObject createDeviceDbObject(int deviceId){
+		return new BasicDBObject().append(DeviceId.DEVICE_ID_KEY, deviceId)
 				.append("teamName", "testTeam");
 	}
 	
 	private DB getMongoDb(){
-		String mongoDB = "mongodb://root:shroot@ds031349.mongolab.com:31349/quizzyrascal";
-		MongoClientURI mongoClientURI = new MongoClientURI(mongoDB);
-		MongoClient mongoClient = null;
+		
+		if (mongoClient != null){
+			return mongoClient.getDB(QUIZZY_RASCAL);
+		}
+		
+		MongoClientURI mongoClientURI = new MongoClientURI(MONGOLAB_DB_URI);
 		try {
 			mongoClient = new MongoClient(mongoClientURI);
-			System.out.println("Connected!!");
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
+			System.out.print("Error retrieving MongoDB Client from MongoLab");
 			e.printStackTrace();
 		}
 		
-		return mongoClient.getDB("quizzyrascal");
-	}
-	
-	@GET
-	@Path("/test")
-	@Produces("application/json")
-	public Notification testGet(){
-		Notification notification = new Notification();
-		notification.setDeviceId(1);
-		notification.setOpenBrowser("Chrome");
-		return notification;
+		return mongoClient.getDB(QUIZZY_RASCAL);
 	}
 	
 	private int generateDeviceId(){

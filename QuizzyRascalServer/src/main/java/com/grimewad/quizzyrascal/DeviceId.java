@@ -2,6 +2,8 @@ package com.grimewad.quizzyrascal;
 
 public class DeviceId {
 	
+	public static final String DEVICE_ID_KEY = "deviceId";
+	
 	private int deviceId;
 
 	public int getDeviceId() {

@@ -11,7 +11,7 @@ Quiz.NotificationView = Backbone.View.extend({
 
 	initialize: function(){
 		_.bindAll(this, 'render');
-		this.template = _.template($('#notification-template')).html();
+		this.template = _.template($('#notification-template').html());
 	},
 
 	render: function(){
@@ -32,10 +32,52 @@ Quiz.NotificationListView = Backbone.View.extend({
 
 	render: function(){
 		$('#notificationList').empty();
-		this.model.each(function(notification){
+		Quiz.notificationList.each(function(notification){
 			var notificationView = new Quiz.NotificationView({model: notification});
 			$('#notificationList').append(notificationView.render().el);
 		});
 	}
 
+});
+
+Quiz.AppView = Backbone.View.extend({
+	el: $('#container'),
+
+	events:{
+		'click #testButton' 	: 	'createNotification'
+	},
+
+	createNotification: function(){
+		var notification = new Quiz.Notification({ id: Quiz.incrementIdCounter(), deviceId: 200});
+		var notification2 = new Quiz.Notification({ id: Quiz.incrementIdCounter(), deviceId: 300});
+		Quiz.notificationList.add(notification);
+		Quiz.notificationList.add(notification2);
+	}
+});
+
+Quiz.incrementIdCounter = function(){
+	var id = Quiz.idCounter;
+	Quiz.idCounter++;
+	return id;
+}
+
+Quiz.Router = Backbone.Router.extend({
+
+	routes:{
+		'':'home'
+	},
+
+	home: function(){
+		var app = new Quiz.AppView();
+		Quiz.notificationList = new Quiz.NotificationList();
+		Quiz.notificationListView = new Quiz.NotificationListView({model: Quiz.notificationList});
+		Quiz.idCounter = 1;
+	}
+
+});
+
+$(function(){
+	
+	Quiz.router = new Quiz.Router();
+	Backbone.history.start({});
 });

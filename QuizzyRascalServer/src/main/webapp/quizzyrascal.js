@@ -49,9 +49,7 @@ Quiz.AppView = Backbone.View.extend({
 
 	createNotification: function(){
 		var notification = new Quiz.Notification({ id: Quiz.incrementIdCounter(), deviceId: 200});
-		var notification2 = new Quiz.Notification({ id: Quiz.incrementIdCounter(), deviceId: 300});
 		Quiz.notificationList.add(notification);
-		Quiz.notificationList.add(notification2);
 	}
 });
 
